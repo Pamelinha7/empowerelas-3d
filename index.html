@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EmPowerElas · Maquete 3D</title>
+<style>
+:root{--bg:#f2f5f8;--card:#fff;--ink:#132027;--ink2:#4a5a64;--line:rgba(19,32,39,.12);--acc:#2c6db5;--kick:#5a4a8c;--grad:linear-gradient(90deg,#009fe3,#2c6db5 32%,#5e2a83 68%,#d11b78)}
+@media (prefers-color-scheme:dark){:root{--bg:#0b1115;--card:#141c22;--ink:#e6edf1;--ink2:#a8b7c0;--line:rgba(255,255,255,.12);--acc:#5c9ee8;--kick:#b5a8f0}}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:grid;place-items:center;padding:24px 16px}
+main{width:100%;max-width:760px}
+.bar{height:6px;border-radius:3px;background:var(--grad);margin-bottom:22px}
+.kick{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--kick);font-weight:600}
+h1{margin:6px 0 10px;font-size:clamp(30px,6vw,44px);line-height:1.05}
+p{color:var(--ink2);font-size:17px;line-height:1.55;margin:0 0 26px;max-width:60ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+a.card{display:block;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 20px 18px;transition:border-color .15s,transform .15s}
+a.card:hover{border-color:var(--acc);transform:translateY(-2px)}
+a.card h2{margin:0 0 6px;font-size:22px}
+a.card span{color:var(--ink2);font-size:15px;line-height:1.5}
+a.card b{display:inline-block;margin-top:12px;color:var(--acc)}
+footer{margin-top:28px;font-size:13px;color:var(--ink2)}
+</style>
+</head>
+<body>
+<main>
+  <div class="bar"></div>
+  <div class="kick">EmPowerElas · FRIENDS Lab · UFF</div>
+  <h1>A maquete da subestação digital em 3D</h1>
+  <p>Passeie pela maquete, voe por cima dela e clique nos equipamentos para aprender o que cada um faz.</p>
+  <div class="grid">
+    <a class="card" href="gemeo/"><h2>Gêmeo digital</h2><span>Mostra a maquete como ela é, com tour guiado, visão das mensagens da rede e a falta da árvore.</span><br><b>Abrir →</b></a>
+    <a class="card" href="simulador/"><h2>Simulador</h2><span>Você opera a subestação: abre e fecha disjuntores e chaves e cria uma falta. Funciona só no navegador.</span><br><b>Abrir →</b></a>
+  </div>
+  <footer>Funciona no computador e no celular, em navegadores atualizados.</footer>
+</main>
+</body>
+</html>
