@@ -1,6 +1,6 @@
 # EmPowerElas · Maquete 3D
 
-Gêmeo digital e simulador da maquete de subestação digital do projeto EmPowerElas (FRIENDS Lab, UFF).
+Gêmeo digital e simulador da maquete de subestação digital do projeto EmPowerElas (UFF).
 
 - `index.html`: página inicial com os dois links
 - `gemeo/`: gêmeo digital (só observa a maquete; nesta versão, em modo demonstração)
