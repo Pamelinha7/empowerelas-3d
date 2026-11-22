@@ -227,7 +227,7 @@ body.touch.fly #estado{display:none}
 .dl{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.35;color:var(--ink-2)}
 .dl b{display:block;color:var(--ink);font-family:var(--f-display);font-size:15px}
 .dl i{width:12px;height:12px;border-radius:50%;flex:none;margin-top:3px}
-.dl i.sv{background:#25c6ff;box-shadow:0 0 8px #25c6ff}
+.dl i.sv{background:#fff;box-shadow:0 0 0 1.5px #9aa1a8,0 0 8px #fff}
 .dl i.go{background:#ffc531;box-shadow:0 0 8px #ffc531}
 .dl i.mm{background:#2bff5c;box-shadow:0 0 8px #2bff5c}
 body.dados #hint{display:none}
@@ -472,7 +472,7 @@ body.dados #hint{display:none}
     <div class="legend">
       <div><span class="led"></span>LED vermelho aceso: disjuntor fechado (a energia passa)</div>
       <div><span class="led aberto"></span>LED verde aceso: disjuntor aberto</div>
-      <div><span class="sw-strip" style="background:#9b5cf0"></span>Fita da fibra: roxa, com bolinhas azul-claras (SV) o tempo todo; verde (MMS) ou amarela (GOOSE) num comando; vermelha no trip</div>
+      <div><span class="sw-strip" style="background:#9b5cf0"></span>Fita da fibra: roxa e fraquinha, com bolinhas brancas (SV) o tempo todo; verde (MMS) ou amarela (GOOSE) num comando; vermelha no trip</div>
       <div><span class="sw-strip" style="background:#d7843f"></span>Fitas laranja (cor de cobre): cabos de cobre entre o pátio e a MU</div>
     </div>
     <div class="about">
@@ -863,7 +863,7 @@ const TXT = {
   },
   dados: {
     o: 'As bolinhas mostram mensagens viajando pela rede da subestação. Pense num correio: cada mensagem tem quem manda, quem recebe e um tipo. A norma IEC 61850 define três tipos principais.',
-    p: 'SV (azul-claro): a MU mede corrente e tensão e manda 4.800 medidas por segundo para a proteção. GOOSE (amarelo): recados curtos e urgentes entre os IEDs, como o trip; ele fica se repetindo de tempos em tempos, como quem diz "continuo aqui". MMS (verde): a conversa do supervisório com os IEDs, para ler valores e mandar os comandos do operador.',
+    p: 'SV (branco): a MU mede corrente e tensão e manda 4.800 medidas por segundo para a proteção. GOOSE (amarelo): recados curtos e urgentes entre os IEDs, como o trip; ele fica se repetindo de tempos em tempos, como quem diz "continuo aqui". MMS (verde): a conversa do supervisório com os IEDs, para ler valores e mandar os comandos do operador.',
     m: 'No gêmeo as mensagens andam bem devagar para dar para ver. Na rede da maquete, cada uma leva bem menos de um milésimo de segundo para chegar.',
     c: ['SV e GOOSE são tão urgentes que não esperam confirmação de chegada: eles vão direto, sem o "aperto de mão" que o MMS faz pelo TCP.',
       'Como o GOOSE se repete o tempo todo, se ele parar de chegar o IED percebe que algo deu errado na rede.',
@@ -1269,13 +1269,14 @@ function buildBig() {
   /* chaves seccionadoras (com lâminas móveis e o eixo) */
   for (let k = 1; k <= 3; k++) {
     const c = CH[k];
-    const hx = c.x + (c.rot ? -HINGE.x : HINGE.x);
+    // A lâmina gira no lado do contato FIXED (como na maquete) e sobe a partir dele.
+    const hx = c.x + (c.rot ? -FIXED.x : FIXED.x);
     const t = T('ch' + k, { info: 'chave', part: 'G', title: 'Chave seccionadora ' + k, label: 'Chave ' + k, anchor: P(c.x, BIG.C, 92), live: 'chave', k, rel: ['dj' + k] });
     for (const f of FASES) {
       const g = new THREE.Group(); g.position.copy(P(c.x, BIG[f], 0)); g.rotation.y = c.rot;
       const pole = new THREE.Mesh(G.CHAVE_G, mEquip); g.add(pole);
-      const piv = new THREE.Group(); piv.position.set(HINGE.x, HINGE.h, 0); g.add(piv);
-      const blade = new THREE.Mesh(G.LAMINA_G, mEquip); piv.add(blade);
+      const piv = new THREE.Group(); piv.position.set(FIXED.x, FIXED.h, 0); g.add(piv);
+      const blade = new THREE.Mesh(G.LAMINA_G, mEquip); blade.rotation.y = Math.PI; piv.add(blade);
       shadowy(g); scene.add(g);
       g.userData.t = t; pickables.push(g);
       const b = meshBox(pole); colliders.push(b); t.boxes.push(b);
@@ -1288,7 +1289,7 @@ function buildBig() {
     const lev = new THREE.Group(); lev.position.copy(P(hx, y1, HINGE.h));
     const arm = new THREE.Mesh(new THREE.BoxGeometry(1.6, 11, 1.6), mSteel); arm.position.y = 5; lev.add(arm);
     const hub = new THREE.Mesh(new THREE.CylinderGeometry(2.1, 2.1, 3, 10), mSteel); hub.rotation.x = Math.PI / 2; lev.add(hub);
-    lev.rotation.z = c.rot ? 0.5 : -0.5; lev.userData.base = lev.rotation.z; lev.userData.sign = c.rot ? -1 : 1;
+    lev.rotation.z = c.rot ? -0.5 : 0.5; lev.userData.base = lev.rotation.z; lev.userData.sign = c.rot ? 1 : -1;
     shadowy(lev); lev.userData.t = t; scene.add(lev); pickables.push(lev);
     chaves[k].levers.push(lev);
     t.boxes.push(meshBox(rod));
@@ -1426,9 +1427,9 @@ varying float vS; varying float vV; varying float vC; varying float vT; varying 
 void main(){
   float led = 1.0 - smoothstep(0.1, 0.32, abs(fract(vS / 16.7) - 0.5));
   float age = uTime - uSince;
-  vec3 base = uBase * (0.42 + 0.9 * led) * (0.92 + 0.08 * sin(uTime * 2.2 + vS * 0.04));
-  float sx = fract((-vC - uTime * 60.0) / 200.0);
-  float sv = pow(sx, 7.0) * uSvOn;
+  vec3 base = uBase * (0.26 + 0.55 * led) * (0.92 + 0.08 * sin(uTime * 2.2 + vS * 0.04));
+  float sx = fract((-vC - uTime * 30.0) / 200.0);
+  float sv = pow(sx, 7.0) * uSvOn * (1.0 - step(0.5, uMode));
   base = mix(base, uSv * (0.8 + 1.2 * led), clamp(sv * 2.2, 0.0, 1.0));
   vec3 col = base;
   if (uMode > 0.5 && uMode < 1.5) {
@@ -1501,7 +1502,7 @@ function buildStrips() {
   const chanMat = new THREE.MeshStandardMaterial({ color: '#2a2f33', roughness: 0.7, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
   const mkChan = (paths, w) => { const m = new THREE.Mesh(ribbonGeo(paths, w, 0.18), chanMat); m.receiveShadow = true; scene.add(m); return m; };
   mkChan(FIBRA, 9); mkChan(COBRE, 9);
-  const uni = () => ({ uTime: { value: 0 }, uMode: { value: 0 }, uSince: { value: 0 }, uGlow: { value: 0 }, uBase: { value: new THREE.Color('#a45cff') }, uCmd: { value: new THREE.Color('#2bff5c') }, uTrip: { value: new THREE.Color('#ff2a1c') }, uSv: { value: new THREE.Color('#25c6ff') }, uSvOn: { value: 1 }, uBoost: { value: [0, 0, 0, 0, 0, 0] } });
+  const uni = () => ({ uTime: { value: 0 }, uMode: { value: 0 }, uSince: { value: 0 }, uGlow: { value: 0 }, uBase: { value: new THREE.Color('#a45cff') }, uCmd: { value: new THREE.Color('#2bff5c') }, uTrip: { value: new THREE.Color('#ff2a1c') }, uSv: { value: new THREE.Color('#ffffff') }, uSvOn: { value: 1 }, uBoost: { value: [0, 0, 0, 0, 0, 0] } });
   const fm = new THREE.ShaderMaterial({ uniforms: uni(), vertexShader: RIB_VS, fragmentShader: FIBRA_FS, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
   const fg = new THREE.ShaderMaterial({ uniforms: uni(), vertexShader: RIB_VS, fragmentShader: FIBRA_FS, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
   fg.uniforms.uGlow.value = 1;
@@ -1875,7 +1876,7 @@ function toggleHum() {
    9. Estado → visual
    ===================================================================== */
 function correnteA() { if (tree.contact && S.dj[1]) return 'falta'; if (!S.dj[1]) return 'zero'; return 'normal'; }
-// Fita da fibra igual a da maquete: roxa com SV (azul-claro) o tempo todo;
+// Fita da fibra igual a da maquete: roxa fraca com SV (branco) o tempo todo;
 // num comando, pulsos na cor do protocolo (MMS verde, GOOSE amarelo); trip vermelho.
 const FITA_COR_CMD = { mms: '#2bff5c', goose: '#ffc531' };
 function setFita(mode, proto = 'mms') {
@@ -2404,7 +2405,7 @@ function startBridge() {
    12b. Visão dos dados: mensagens SV, GOOSE e MMS como bolinhas
    ===================================================================== */
 let ROTAS = {};
-const PKT_COR = { sv: '#25c6ff', goose: '#ffc531', mms: '#2bff5c' };
+const PKT_COR = { sv: '#ffffff', goose: '#ffc531', mms: '#2bff5c' };
 const PKT = { on: false, vivos: [], livres: [], cd: { sv: 0, goose: 1.4, mms: 0.7 }, mmsN: 0, tex: null };
 function rota(pts, rev) {
   const ws = pts.map(([x, y]) => P(x, y, 5)); if (rev) ws.reverse();
@@ -2777,7 +2778,7 @@ function frame() {
     const want = S.ch[k] ? 0 : 1, c = chaves[k];
     if (c.a !== want) c.a = want > c.a ? Math.min(want, c.a + sim / 2.4) : Math.max(want, c.a - sim / 2.4);
     const ang = easeIO(c.a) * 80 * D2R;
-    c.pivots.forEach((p) => { p.rotation.z = ang; });
+    c.pivots.forEach((p) => { p.rotation.z = -ang; });
     c.levers.forEach((l) => { l.rotation.z = l.userData.base + l.userData.sign * ang; });
     const L = ledObjs[k]; L.lv = lerp(L.lv, S.dj[k] ? 1 : 0, 1 - Math.exp(-dt * 16));
     L.red.mat.emissiveIntensity = 0.04 + 3.2 * L.lv; L.green.mat.emissiveIntensity = 0.04 + 3.2 * (1 - L.lv);
