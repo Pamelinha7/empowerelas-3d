@@ -1269,14 +1269,17 @@ function buildBig() {
   /* chaves seccionadoras (com lâminas móveis e o eixo) */
   for (let k = 1; k <= 3; k++) {
     const c = CH[k];
-    // A lâmina gira no lado do contato FIXED (como na maquete) e sobe a partir dele.
+    // Como na maquete: a chave inteira fica virada (a articulação da lâmina do
+    // outro lado). As duas colunas continuam nos mesmos pontos, por isso o
+    // deslocamento 'off' quando a peça é girada.
+    const virada = c.rot + Math.PI, off = (c.rot ? -1 : 1) * (HINGE.x + FIXED.x);
     const hx = c.x + (c.rot ? -FIXED.x : FIXED.x);
     const t = T('ch' + k, { info: 'chave', part: 'G', title: 'Chave seccionadora ' + k, label: 'Chave ' + k, anchor: P(c.x, BIG.C, 92), live: 'chave', k, rel: ['dj' + k] });
     for (const f of FASES) {
-      const g = new THREE.Group(); g.position.copy(P(c.x, BIG[f], 0)); g.rotation.y = c.rot;
+      const g = new THREE.Group(); g.position.copy(P(c.x + off, BIG[f], 0)); g.rotation.y = virada;
       const pole = new THREE.Mesh(G.CHAVE_G, mEquip); g.add(pole);
-      const piv = new THREE.Group(); piv.position.set(FIXED.x, FIXED.h, 0); g.add(piv);
-      const blade = new THREE.Mesh(G.LAMINA_G, mEquip); blade.rotation.y = Math.PI; piv.add(blade);
+      const piv = new THREE.Group(); piv.position.set(HINGE.x, HINGE.h, 0); g.add(piv);
+      const blade = new THREE.Mesh(G.LAMINA_G, mEquip); piv.add(blade);
       shadowy(g); scene.add(g);
       g.userData.t = t; pickables.push(g);
       const b = meshBox(pole); colliders.push(b); t.boxes.push(b);
@@ -2778,7 +2781,7 @@ function frame() {
     const want = S.ch[k] ? 0 : 1, c = chaves[k];
     if (c.a !== want) c.a = want > c.a ? Math.min(want, c.a + sim / 2.4) : Math.max(want, c.a - sim / 2.4);
     const ang = easeIO(c.a) * 80 * D2R;
-    c.pivots.forEach((p) => { p.rotation.z = -ang; });
+    c.pivots.forEach((p) => { p.rotation.z = ang; });
     c.levers.forEach((l) => { l.rotation.z = l.userData.base + l.userData.sign * ang; });
     const L = ledObjs[k]; L.lv = lerp(L.lv, S.dj[k] ? 1 : 0, 1 - Math.exp(-dt * 16));
     L.red.mat.emissiveIntensity = 0.04 + 3.2 * L.lv; L.green.mat.emissiveIntensity = 0.04 + 3.2 * (1 - L.lv);
