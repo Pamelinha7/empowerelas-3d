@@ -1466,13 +1466,19 @@ uniform float uTime; uniform vec3 uColor;
 varying float vS; varying float vV; varying float vC; varying float vT; varying float vB; varying float vP;
 void main(){
   float led = 1.0 - smoothstep(0.1, 0.32, abs(fract(vS / 16.7) - 0.5));
-  // TC (fita 1) e TP (fita 5): as medidas vao do equipamento para a MU.
-  // DJ e chaves: a ordem vai da MU para o equipamento.
-  float med = step(abs(vP - 1.0), 0.5) + step(abs(vP - 5.0), 0.5);
-  float sent = 1.0 - 2.0 * med;
-  float x = fract((sent * vS - uTime * 52.0) / 76.0);
+  // Todas as fitas: o rastro anda do equipamento para a MU (medidas do TC e do TP,
+  // e o estado do disjuntor e das chaves). Igual a fita de cobre da maquete.
+  float x = fract((-vS - uTime * 52.0) / 76.0);
   float pulse = pow(x, 5.0);
-  vec3 col = uColor * (0.16 + 0.22 * led + (1.0 + 1.6 * vB) * pulse * (0.35 + 0.65 * led) + 0.35 * vB * led);
+  // DJ e chaves: num comando, uma rajada vai da MU para o equipamento
+  // e o rastro normal sai da frente enquanto ela passa.
+  float cmd = (1.0 - step(abs(vP - 1.0), 0.5) - step(abs(vP - 5.0), 0.5)) * vB;
+  float xc = fract((vS - uTime * 110.0) / 60.0);
+  float pc = pow(xc, 5.0) * cmd;
+  pulse *= 1.0 - clamp(cmd * 1.5, 0.0, 1.0);
+  float med = vB * (1.0 - step(0.001, cmd));
+  vec3 col = uColor * (0.16 + 0.22 * led + (1.0 + 1.6 * med) * pulse * (0.35 + 0.65 * led) + 0.35 * vB * led)
+           + uColor * 1.8 * pc * (0.4 + 0.6 * led);
   col *= 1.0 - smoothstep(0.7, 1.0, abs(vV)) * 0.35;
   gl_FragColor = vec4(col, 1.0);
   #include <tonemapping_fragment>
