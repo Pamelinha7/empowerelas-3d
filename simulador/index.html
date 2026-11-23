@@ -170,7 +170,7 @@ body.sim #dados{left:calc(50% + 184px);width:min(760px,calc(100vw - 400px))}
 .rp-btns .btn{box-shadow:none;height:36px;font-size:14.5px}
 
 /* dicas e avisos */
-#hint{position:fixed;left:50%;bottom:var(--gb);transform:translate(-50%,8px);z-index:9;font-size:13.5px;line-height:1.35;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);padding:9px 15px;border-radius:999px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .35s,transform .35s;max-width:min(640px,calc(100vw - var(--gl) - var(--gr)));text-align:center}
+#hint{position:fixed;left:50%;bottom:var(--gb);transform:translate(-50%,8px);z-index:9;font-size:13.5px;line-height:1.35;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);padding:9px 15px;border-radius:18px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .35s,transform .35s;max-width:min(640px,calc(100vw - var(--gl) - var(--gr)));text-align:center}
 #hint.show{opacity:1;transform:translate(-50%,0)}
 #toast{position:fixed;left:50%;top:45%;transform:translate(-50%,-50%) scale(.97);opacity:0;transition:opacity .2s,transform .2s;z-index:30;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:700;font-size:15px;pointer-events:none;max-width:calc(100vw - 40px);text-align:center}
 #toast.show{opacity:.95;transform:translate(-50%,-50%) scale(1)}
@@ -431,7 +431,7 @@ body:has(#replay.open) #falta,body:has(#tour.open) #falta,body:has(#info.open) #
     <li><time>,816</time><span><b>PROT</b> · percebe a falta e manda o trip por GOOSE.</span><p class="ex">A proteção compara a corrente com o limite e decide abrir. O aviso vai por GOOSE, a mensagem mais rápida da rede, e a fita da fibra fica vermelha.</p></li>
     <li><time>,818</time><span><b>CTRL</b> · o DJ1 abre e a corrente da falta para.</span><p class="ex">Só o DJ1 abre porque ele é o disjuntor mais perto da falta. O resto da subestação continua com energia: isso se chama seletividade.</p></li>
     <li><time>,823</time><span><b>PROT</b> · libera a chave 1 (intertravamento).</span><p class="ex">Sem corrente passando, o intertravamento deixa a chave 1 ser aberta. Até agora ela estava travada.</p></li>
-    <li><time>depois</time><span><b>Operador</b> · abre a chave 1 para isolar o trecho.</span><p class="ex">O DJ1 já cortou a corrente, mas ele pode ser fechado de novo por um comando. A chave aberta deixa um espaço que dá para ver de longe: é a garantia de que o trecho está desligado para a equipe trabalhar. Ela não abre junto com o DJ1 porque não foi feita para cortar corrente.</p></li>
+    <li><time>depois</time><span><b>Operador</b> · abre a chave 1 para isolar o trecho.</span><p class="ex">O DJ1 já cortou a corrente, mas ele pode ser fechado de novo por um comando. A chave aberta deixa um espaço que dá para ver de longe: é a garantia de que o trecho está desligado para a equipe trabalhar. Ela não abre junto com o DJ1 porque não foi feita para cortar corrente. Na maquete, essa chave abre sozinha 2 s depois do trip, só para a demonstração.</p></li>
     <li><time>depois</time><span><b>Manutenção</b> · retira a árvore da linha.</span><p class="ex">Com o DJ1 e a chave 1 abertos, a equipe pode chegar perto do cabo com segurança e tirar a árvore.</p></li>
     <li><time>depois</time><span><b>Operador</b> · fecha a chave 1.</span><p class="ex">A volta é na ordem contrária. Primeiro a chave, com o DJ1 ainda aberto, porque a chave também não pode fechar com corrente passando.</p></li>
     <li><time>depois</time><span><b>Operador</b> · fecha o DJ1 e a energia volta.</span><p class="ex">Quem fecha o circuito é o disjuntor, que aguenta a corrente. A chave 1 volta a ficar travada pelo intertravamento.</p></li>
@@ -683,7 +683,7 @@ const TXT = {
   chave: {
     o: 'Uma chave que abre o circuito de um jeito que dá para ver de longe: a lâmina sobe e deixa um espaço de ar entre os contatos.',
     p: 'Isolar um trecho da subestação para a manutenção ser feita com segurança. Ela não foi feita para cortar corrente: só abre depois que o disjuntor já abriu.',
-    m: 'Um eixo une as lâminas das três fases e um servo motor puxa a ponta desse eixo com um fio de nylon. No gêmeo aparece só o eixo. A Raspberry CTRL comanda a chave (nó lógico XSWI) e o intertravamento (nó CILO) só libera a chave com o disjuntor aberto.',
+    m: 'Um eixo une as lâminas das três fases e um servo motor puxa a ponta desse eixo com um fio de nylon. No gêmeo aparece só o eixo. Quem decide é a Raspberry PROT: o comando do operador chega no nó CSWI, e o intertravamento (nó CILO) só libera a chave com o disjuntor aberto. Quem executa é a Raspberry CTRL, pelo nó XSWI. Depois de uma falta, a chave 1 da maquete abre sozinha, só para a demonstração: numa subestação de verdade, quem abre é o operador.',
     c: ['Abrir uma seccionadora com corrente passando forma um arco elétrico enorme e perigoso. O intertravamento existe para impedir esse erro.',
       'Em 500 kV, a lâmina de uma seccionadora pode ter vários metros de comprimento.',
       'Depois de aberta, a seccionadora costuma ser travada com cadeado e uma etiqueta de aviso, para ninguém fechar por engano durante a manutenção.',
@@ -692,7 +692,7 @@ const TXT = {
   led: {
     o: 'Uma caixinha com dois LEDs que mostra se um disjuntor está aberto ou fechado.',
     p: 'O estado do disjuntor aparece na luz: LED vermelho aceso quer dizer fechado (a energia passa) e LED verde aceso quer dizer aberto.',
-    m: 'São três caixinhas, uma para cada disjuntor: o DJ1 trabalha com a chave 1, o DJ2 com a chave 2 e o DJ3 com a chave 3. Quem acende os LEDs é a Raspberry CTRL, pelo nó lógico XCBR.',
+    m: 'São três caixinhas, uma para cada disjuntor: o DJ1 trabalha com a chave 1, o DJ2 com a chave 2 e o DJ3 com a chave 3. Quem acende os LEDs é a Raspberry CTRL, pelo nó lógico XCBR. O comando do operador passa antes pelo nó CSWI da Raspberry PROT, como pede a norma; só o trip vai direto para o XCBR.',
     c: ['A maquete segue a convenção de muitas subestações reais: vermelho quer dizer fechado (energizado, cuidado!) e verde quer dizer aberto.',
       'Um disjuntor de verdade passa quase o tempo todo fechado: ele só abre para manutenção ou quando a proteção manda.',
       'No IEC 61850, o estado do disjuntor é o dado Pos do nó XCBR, que pode valer aberto, fechado, intermediário (no meio do movimento) ou inválido.',
@@ -800,7 +800,7 @@ const TXT = {
   fibra: {
     o: 'Uma fita de LED que mostra o caminho da fibra óptica entre o painel da MU, as Raspberry Pi e o painel de switches.',
     p: 'Deixar visível por onde a informação passa.',
-    m: 'No normal, a fita fica acesa em roxo. Quando passa um comando, pulsos azuis correm pela fita. No trip, ela fica vermelha.',
+    m: 'A fita fica roxa bem fraca e bolinhas brancas (SV) andam o tempo todo. Rajadas amarelas são GOOSE e verdes são MMS. No trip, uma onda vermelha toma a fita.',
     c: ['A fibra leva a informação com luz, então não sofre interferência dos campos elétricos e magnéticos fortes da subestação.',
       'Uma fibra óptica é um fio de vidro com mais ou menos a espessura de um fio de cabelo.',
       'Como o vidro não conduz eletricidade, a fibra também separa eletricamente o pátio da casa de controle.'],
@@ -808,7 +808,7 @@ const TXT = {
   cobre: {
     o: 'Fitas de LED que representam os cabos de cobre entre os equipamentos do pátio e o painel da MU.',
     p: 'Mostrar que os sinais dos TCs e TPs e os comandos das chaves e do disjuntor ainda viajam por fio de cobre até a MU.',
-    m: 'Os pulsos laranja correm pelas fitas para mostrar os sinais passando. Quando um equipamento é comandado, a fita dele brilha mais.',
+    m: 'Bolinhas laranja pequenas levam as medidas dos equipamentos até o painel da MU. Quando um equipamento é comandado, uma rajada de bolinhas maiores faz o caminho contrário.',
     c: ['Quanto mais perto dos equipamentos fica a MU, menos cobre é preciso. Essa é uma das vantagens da subestação digital.',
       'Numa subestação convencional grande, os cabos de controle de cobre podem somar dezenas de quilômetros.',
       'Fios de cobre compridos funcionam como antenas e captam interferência. A fibra não tem esse problema.'],
@@ -2003,6 +2003,7 @@ function asBool(v) {
 }
 function aplicarEstado(p = {}) {
   let ch = false;
+  const antes = { arv: S.arvore, dj1: S.dj[1], ch1: S.ch[1] };
   for (let k = 1; k <= 3; k++) {
     const dj = asBool(p['dj' + k]); if (dj !== null && dj !== S.dj[k]) { S.dj[k] = dj; boost(COBRE_DO.dj); ch = true; }
     const cv = asBool(p['ch' + k]); if (cv !== null && cv !== S.ch[k]) { S.ch[k] = cv; boost(COBRE_DO['ch' + k]); ch = true; }
@@ -2010,7 +2011,32 @@ function aplicarEstado(p = {}) {
   }
   if ('arvore' in p) { const v = asBool(p.arvore); if (v !== null && v !== S.arvore) { S.arvore = v; v ? arvoreCai() : arvoreLevanta(); ch = true; } }
   if (typeof p.fita === 'string' && ['normal', 'comando', 'trip'].includes(p.fita) && p.fita !== S.fita) { setFita(p.fita); ch = true; }
-  if (ch) refreshState();
+  if (ch) { refreshState(); narrarMaquete(antes); }
+}
+/* narração do que acontece na maquete ao vivo (aparece embaixo da tela) */
+const NARRA = { tripEm: 0, falta: false };
+function narrarMaquete(a) {
+  if (!S.live) return;
+  const agora = performance.now();
+  if (!a.arv && S.arvore) {
+    NARRA.falta = true;
+    hint(S.dj[1] ? 'Alguém apertou o botão da falta: a árvore caiu no cabo da fase A.' : 'A árvore caiu, mas o DJ1 já estava aberto: sem corrente, não há falta.', 9000);
+  }
+  if (a.dj1 && !S.dj[1] && S.arvore) {
+    NARRA.tripEm = agora;
+    hint('Falta! A MU mediu a corrente alta, a PROT mandou o trip por GOOSE e o DJ1 abriu em poucos milissegundos.', 12000);
+  }
+  if (a.ch1 && !S.ch[1] && NARRA.tripEm && agora - NARRA.tripEm < 20000) {
+    NARRA.tripEm = 0;
+    hint('A chave 1 abriu sozinha para isolar o trecho. Isso é só da maquete: numa subestação de verdade, quem abre a chave é o operador, depois que o disjuntor já cortou a corrente.', 16000);
+  }
+  if (a.arv && !S.arvore) {
+    hint(S.dj[1] ? 'A árvore saiu da linha.' : 'Apertaram o botão de novo e a árvore saiu da linha. Para religar, pelo supervisório: primeiro feche a chave 1, depois o DJ1.', 14000);
+  }
+  if (!a.dj1 && S.dj[1] && NARRA.falta && !S.arvore && S.ch[1]) {
+    NARRA.falta = false;
+    hint('Energia de volta: a chave 1 e o DJ1 estão fechados de novo.', 8000);
+  }
 }
 window.gemeo = { aplicarEstado, estado: S, camera };
 
@@ -2759,19 +2785,19 @@ function simCmd(tipo, k) {
   const acao = fechar ? 'fechar' : 'abrir';
   simBusy(true);
   simLog('Operador', `Comando: ${acao} ${nome}`, 0);
-  simExp(`<b>1. O comando saiu do supervisório.</b> O pedido para ${acao} ${nome} vira uma mensagem <b>MMS</b> e vai pela rede até a Raspberry CTRL.`);
+  simExp(`<b>1. O comando saiu do supervisório.</b> O pedido para ${acao} ${nome} vira uma mensagem <b>MMS</b> e vai pela rede até a Raspberry PROT, que faz o papel do IED de controle (nó lógico CSWI).`);
   setFita('comando'); refreshState(); pkt('mms', ['f3r', 'f2']);
   after(1.8, () => {
     if (tipo === 'ch' && S.dj[k]) {
-      simLog('CTRL', `Comando recusado: o DJ${k} está fechado (intertravamento)`, 5, true);
+      simLog('PROT', `Comando recusado: o DJ${k} está fechado (intertravamento)`, 5, true);
       simExp(`<b>Comando bloqueado.</b> O intertravamento (nó lógico CILO) não deixa mexer na chave ${k} com o DJ${k} fechado: abrir uma seccionadora com corrente passando faria um arco elétrico perigoso. Abra o DJ${k} primeiro.`);
       toast(`Bloqueado: abra o DJ${k} antes de mexer na chave ${k}`, 2600);
       pkt('mms', ['f2r', 'f3']); setFita('normal'); refreshState(); simBusy(false);
       return;
     }
-    simLog('CTRL', `Recebeu o comando e mandou ${acao} ${nome}`, 5);
+    simLog('PROT', `Intertravamento liberado: mandou ${acao} ${nome} por GOOSE`, 5);
     if (tipo === 'ch') setFita('comando', 'goose');
-    simExp(`<b>2. A CTRL obedece.</b> Ela confere o intertravamento e manda a ordem para o pátio: pela fibra até o painel da MU e de lá pelo cobre até o equipamento.`);
+    simExp(`<b>2. A PROT confere e manda.</b> Ela confere o intertravamento (nó lógico CILO) e manda a ordem por <b>GOOSE</b> para a Raspberry CTRL, que comanda o pátio: pela fibra até o painel da MU e de lá pelo cobre até o equipamento.`);
     pkt('goose', 'f1');
     after(2.0, () => {
       boost(tipo === 'dj' ? COBRE_DO.dj : COBRE_DO['ch' + k], 1);
@@ -2781,7 +2807,7 @@ function simCmd(tipo, k) {
         simExp(fechar ? `<b>3. O DJ${k} fechou.</b> O LED vermelho da caixinha DJ${k} acendeu: a energia volta a passar.` : `<b>3. O DJ${k} abriu.</b> O LED verde da caixinha DJ${k} acendeu: a corrente foi interrompida.`);
         after(1.3, () => {
           S.trava[k] = fechar; setFita('normal'); refreshState(); pkt('mms', ['f2r', 'f3']);
-          simLog('CTRL', fechar ? `Chave ${k} travada (intertravamento)` : `Chave ${k} liberada (intertravamento)`, 12);
+          simLog('PROT', fechar ? `Chave ${k} travada (intertravamento)` : `Chave ${k} liberada (intertravamento)`, 12);
           simExp(fechar ? `<b>4. Chave ${k} travada.</b> Com o DJ${k} fechado e corrente passando, o intertravamento não deixa ninguém mexer na chave ${k}.` : `<b>4. Chave ${k} liberada.</b> Com o DJ${k} aberto, já dá para mexer na chave ${k} com segurança.`);
           if (fechar && k === 1 && tree.contact) after(0.5, () => simFalta(true));
           else simBusy(false);
@@ -2815,9 +2841,23 @@ function simFalta(religou) {
       after(1.4, () => {
         S.trava[1] = false; refreshState(); pkt('mms', ['f2r', 'f3']);
         simLog('PROT', 'Chave 1 liberada (intertravamento)', 13);
-        simExp('<b>Falta isolada.</b> Para religar com segurança, retire a árvore e depois feche o DJ1. Se o DJ1 fechar com a árvore ainda na linha, a proteção abre de novo.');
-        simBusy(false);
+        simExp('<b>Chave 1 liberada.</b> Sem corrente passando, o intertravamento deixa a chave 1 ser aberta. Na maquete, ela vai abrir sozinha daqui a pouco.');
+        after(2.2, () => simChaveAuto());
       });
+    });
+  });
+}
+// Só da maquete: a chave 1 abre sozinha 2 s depois do trip.
+function simChaveAuto() {
+  if (S.dj[1] || !S.ch[1]) { simBusy(false); return; }
+  setFita('comando', 'goose'); pkt('goose', 'f1'); refreshState();
+  simLog('CTRL', 'Chave 1 abrindo sozinha, 2 s depois do trip (só na maquete)', 2008);
+  after(0.8, () => {
+    boost(COBRE_DO.ch1, 1); S.ch[1] = false; refreshState();
+    after(2.6, () => {
+      simLog('CTRL', 'Chave 1 aberta: o trecho com falta ficou isolado', 3500);
+      simExp('<b>A chave 1 abriu sozinha.</b> Isso é só da maquete, para mostrar o trecho com falta isolado. Numa subestação de verdade a chave não abre sozinha: depois que o disjuntor já cortou a corrente, é o operador quem manda abrir a chave, pelo supervisório. <b>Para religar:</b> retire a árvore, feche a chave 1 e depois o DJ1. Se o DJ1 fechar com a árvore ainda na linha, a proteção abre de novo.');
+      pkt('mms', ['f2r', 'f3']); setFita('normal'); refreshState(); simBusy(false);
     });
   });
 }
@@ -2840,7 +2880,9 @@ function simRetirar(botao) {
   SM.t0 = Date.now(); simBusy(true);
   if (botao) simLog('Botão da falta', 'Apertado de novo: a árvore é retirada', 0);
   else simLog('Manutenção', 'Árvore retirada da linha', 0);
-  simExp('<b>Linha livre.</b> A equipe retirou a árvore e o DJ1 já pode ser fechado de novo. Na vida real, esse trabalho só é feito com o disjuntor e a chave abertos e a linha aterrada.');
+  simExp(S.ch[1]
+    ? '<b>Linha livre.</b> A equipe retirou a árvore e o DJ1 já pode ser fechado de novo. Na vida real, esse trabalho só é feito com o disjuntor e a chave abertos e a linha aterrada.'
+    : '<b>Linha livre.</b> A equipe retirou a árvore. Para a energia voltar, feche primeiro a chave 1 e depois o DJ1. Na vida real, esse trabalho só é feito com o disjuntor e a chave abertos e a linha aterrada.');
   S.arvore = false; arvoreLevanta(); refreshState();
   after(1.2, () => simBusy(false));
 }
